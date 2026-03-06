@@ -165,12 +165,87 @@ public class MotorPhPayrollSystem {
         double secondNet = secondGross - totalDeductions
 
         System.out.println("\nEmployee #: " + empNumber);
-        
+        System.out.println("Employee Name: " + lastName + ", " + firstName);
+        System.out.println("Birthday: " + birthday);
+        System.out.println("Hourly Rate: " + hourlyRate);
+
+        System.out.println("\nCutoff Date: June  16 to June 30");
+        System.out.println("Total Hours Worked: " + secondCutoffHours);
+        System.out.println("Gross Salary: " + secondGross);
+
+        System.out.println("Each Deduction:");
+        System.out.println("SSS: " + sss);
+        System.out.println("PhilHealth: " + philhealth);
+        System.out.println("Pag-IBIG: " + pagibig);
+        System.out.println("Tax: " + tax);
+        System.out.println("Total Deductions: " + totalDeductions);
+        System.out.println("Net Salary: " + secondNet); 
+    }
+}   
 
 
-            
+package motorph;
 
-        
+import java.io.BufferedReader; 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class EmployeeNumber {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        String empNumInput = sc.nextLine();
+
+        boolean found = false;
+
+        try {
+            InputStream is = EmployeeNumber.class
+                .getClassLoader()
+                .getResourceAsStream("MotorPh_EmployeeData.csv");
+
+            if (is == null) { 
+                System.out.println("File not found!");
+                return;
+            }
+            BufferedReader br = new BuffereReader(new InputStreamReader(is));
+
+            br. readLine(); // skip header
+
+            String line;
+
+            while ((line = br.readline()) !=null) {
+
+                System.out.println("\nEmployee Found:");
+                System.out.println("Employee #: " + data[0]);
+                System.out.println("Last Name: " + data[1]);
+                System.out.println("First Name: " + data[2]);
+                System.out.println("Birthday: " + data[3]);
+                System.out.println("Position: " + data[11]);
+                System.out.println("Basic Salary: " + data[13]);
+                System.out.println("Hourly Rate: " + data[18]);
+
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) { 
+            System.out.println("Employee does not exist.");
+        }
+
+    } catch (IOException e) { 
+        System.out.println("Error reading file: " + e.getMessege());
+    }
+
+    sc.close(); 
+  }
+}
+
+                
+                    
     }
     
 }
