@@ -27,6 +27,9 @@ public class MotorPhPayrollSystem {
         
         username = username.toLowerCase();
         
+      String empFile = "resources/MotorPH_Employee Data - Employee Details.csv";
+      String attFile = "resources/MotorPH_Employee Data - Attendance Record.csv";
+        
         //Credentials Validation
         if (!(username.equals("employee") || username.equals("payroll_staff")) 
                 || !password.equals("12345")) {
