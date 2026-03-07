@@ -7,6 +7,9 @@ package motorph;
 /**
  *
  * @author patricesaints
+ * @andrielleanas
+ * @diamsecurtney
+ * ac
  */
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,24 +24,28 @@ import java.util.ArrayList;
 public class MotorPhPayrollSystem {
     
     public static void main(String[] args) {
-        
+
+        // Create a scanner to read input
         Scanner sc = new Scanner(System.in);
-        
+
+        // Ask the user to enter username
         System.out.print("Enter username: ");
+        // Read the username input
         String username = sc.nextLine();
-        
+
+        // Ask the user to enter password
         System.out.print("Enter password: ");
+        // Read the password input
         String password = sc.nextLine();
-        
-        username = username.toLowerCase();
-        
-      String empFile = "resources/MotorPH_Employee Data - Employee Details.csv";
-      String attFile = "resources/MotorPH_Employee Data - Attendance Record.csv";
+
+        // File path of MotorPH's Employee Details CSV File
+        String empFile = "resources/MotorPH_Employee Data - Employee Details.csv";
+        // File path of the MotorPH's Attendance Record CSV File
+        String attFile = "resources/MotorPH_Employee Data - Attendance Record.csv";
         
         //Credentials Validation
         if (!(username.equals("employee") || username.equals("payroll_staff")) 
-                || !password.equals("12345")) 
-        {
+                || !password.equals("12345")) {
            System.out.print("Incorrect username and/or password. "); 
            return;
         }
@@ -46,98 +53,152 @@ public class MotorPhPayrollSystem {
         //Login Successful
         System.out.println("Login successful!");
 
-        //if username, equal employee
+        // If the username entered was "employee"
         if (username.equals("employee")) {
+
+            // Display the options available
             System.out.println("\nPlease choose an option below");
             System.out.println("1. Enter Employee Number");
             System.out.println("2. Exit");
+
+            // Read the option chosen
             int option = sc.nextInt();
+
+            // Clear the scanner
             sc.nextLine();
 
+            // If the user selected option 2, terminate the program
             if (option == 2) return;
 
+            // Ask the employee to enter their employee number
             System.out.print("Enter Employee Number: ");
+             // Read the employee number
             String empInput = sc.nextLine();
 
+            // Call the method that displays employee information
             showEmployeeInfo(empInput, empFile);
         }
 
+        // If the username entered was "payroll_staff"
         else if (username.equals("payroll_staff")) {
+
+            // Display payroll staff options
             System.out.println("\nPlease choose an option below");
             System.out.println("1. Process Payroll");
             System.out.println("2. Exit");
+
+            // Read the selected option
             int option = sc.nextInt();
+
+            // Read the selected option
             sc.nextLine();
 
+            // If option 2 is selected, terminate the program
             if (option == 2) return;
-            
+
+            // Display payroll processing options
             System.out.println("\n Please choose an option below");
             System.out.println("1. One Employee");
             System.out.println("2. All Employees");
             System.out.println("3. Exit");
+
+            // Read the selected payroll processing option
             int choice = sc.nextInt();
+
+            // Read the selected payroll processing option
             sc.nextLine();
 
+            // If option 3 is selected, terminate the program
             if (choice == 3) return;
+
+            // If payroll staff chooses to process payroll for one employee
             if (choice == 1) {
+                // Ask for employee number
                 System.out.print("Enter Employee Number: ");
+
+                // Ask for employee number
                 String empInput = sc.nextLine();
+
+                 // Process payroll for that employee
                 processEmployee(empInput, empFile, attFile);
             } 
+
+            // If payroll staff chooses to process payroll for all employees
             else if (choice == 2) {
+
+                 // Call method to process payroll for every employee in the file
                 processAllEmployees(empFile, attFile);
             }
         }
     }
+        // Method that displays employee details for employee users
         static void showEmployeeInfo(String empNo, String empFile) {
+
+         // Try to open and read the employee CSV file
         try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
+
+            // Read the first line of the CSV file (header row)
             String header = br.readLine();
+            
+            // If the file is empty, display error message
             if (header == null) {
                 System.out.println("Employee file is empty.");
                 return;
             }
+
+            // Variable to store each line read from the CSV file
             String line;
+            
+            // Boolean flag to check if employee was found
             boolean found = false;
 
+            // Loop through each line of the CSV file
             while ((line = br.readLine()) != null) {
+
+                // Split the CSV row into columns
                 String[] data = parseCSVLine(line);
+
+                // Check if the employee number matches the user input
                 if (data.length > 0 && safeGet(data, 0).equals(empNo)) {
+
+                    // Employee found
                     found = true;
+
+                    // Display employee information
                     System.out.println("\nEmployee Number: " + safeGet(data, 0));
                     System.out.println("Employee Name: " + safeGet(data, 1) + ", " + safeGet(data, 2));
                     System.out.println("Birthday: " + safeGet(data, 3));
+                    
                     break;
                 }
             }
 
+            // If employee number was not found in the CSV file
             if (!found) {
                 System.out.println("Employee number does not exist.");
             }
 
         }  
             catch (Exception e) {
+                // Display error if the file cannot be read
                 System.out.println("Error reading employee file.");
             }
         }
-        static void processAllEmployees(String empFile, String attFile) 
-    {
-        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) 
-        {
+        
+    static void processAllEmployees(String empFile, String attFile) {
+        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
             String header = br.readLine();
-            if (header == null) 
-                {
+            if (header == null) {
                 System.out.println("Employee file is empty.");
                 return;
                 }
 
         String line;
-        while ((line = br.readLine()) != null) 
-            {
+        while ((line = br.readLine()) != null) {
                 String[] data = parseCSVLine(line);
                 String empNo = safeGet(data, 0);
 
-            if (!empNo.isEmpty()) 
-                {
+            if (!empNo.isEmpty()) {
                     processEmployee(empNo, empFile, attFile);
                 }
             }
