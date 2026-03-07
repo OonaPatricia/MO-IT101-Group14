@@ -88,6 +88,37 @@ public class MotorPhPayrollSystem {
                 processAllEmployees(empFile, attFile);
             }
         }
+        static void showEmployeeInfo(String empNo, String empFile) {
+        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
+
+            String header = br.readLine();
+            if (header == null) {
+                System.out.println("Employee file is empty.");
+                return;
+            }
+
+            String line;
+            boolean found = false;
+
+            while ((line = br.readLine()) != null) {
+                String[] data = parseCSVLine(line);
+                if (data.length > 0 && safeGet(data, 0).equals(empNo)) {
+                    found = true;
+                    System.out.println("\nEmployee Number: " + safeGet(data, 0));
+                    System.out.println("Employee Name: " + safeGet(data, 1) + ", " + safeGet(data, 2));
+                    System.out.println("Birthday: " + safeGet(data, 3));
+                    break;
+                }
+            }
+
+            if (!found) {
+                System.out.println("Employee number does not exist.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error reading employee file.");
+        }
+    }
 
         
     }
