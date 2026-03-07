@@ -48,7 +48,8 @@ public class MotorPhPayrollSystem {
 
         //if username, equal employee
         if (username.equals("employee")) {
-            System.out.println("\n1. Enter Employee Number");
+            System.out.println("\nPlease choose an option below");
+            System.out.println("1. Enter Employee Number");
             System.out.println("2. Exit");
             int option = sc.nextInt();
             sc.nextLine();
@@ -62,14 +63,16 @@ public class MotorPhPayrollSystem {
         }
 
         else if (username.equals("payroll_staff")) {
-            System.out.println("\n1. Process Payroll");
+            System.out.println("\nPlease choose an option below");
+            System.out.println("1. Process Payroll");
             System.out.println("2. Exit");
             int option = sc.nextInt();
             sc.nextLine();
 
             if (option == 2) return;
-
-            System.out.println("\n1. One Employee");
+            
+            System.out.println("\n Please choose an option below");
+            System.out.println("1. One Employee");
             System.out.println("2. All Employees");
             System.out.println("3. Exit");
             int choice = sc.nextInt();
