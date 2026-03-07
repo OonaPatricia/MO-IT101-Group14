@@ -37,8 +37,8 @@ public class MotorPhPayrollSystem {
         
         //Credentials Validation
         if (!(username.equals("employee") || username.equals("payroll_staff")) 
-                || !password.equals("12345")) {
-            
+                || !password.equals("12345")) 
+        {
            System.out.print("Incorrect username and/or password. "); 
            return;
         }
@@ -47,8 +47,8 @@ public class MotorPhPayrollSystem {
         System.out.println("Login successful!");
 
         //if username, equal employee
-        if (username.equals("employee")) {
-
+        if (username.equals("employee")) 
+        {
             System.out.println("\n1. Enter Employee Number");
             System.out.println("2. Exit");
             int option = sc.nextInt();
@@ -60,10 +60,10 @@ public class MotorPhPayrollSystem {
             String empInput = sc.nextLine();
 
             showEmployeeInfo(empInput, empFile);
-
         }
 
-        else if (username.equals("payroll_staff")) {
+        else if (username.equals("payroll_staff")) 
+        {
 
             System.out.println("\n1. Process Payroll");
             System.out.println("2. Exit");
@@ -79,30 +79,37 @@ public class MotorPhPayrollSystem {
             sc.nextLine();
 
             if (choice == 3) return;
-
-            if (choice == 1) {
+            if (choice == 1) 
+            {
                 System.out.print("Enter Employee Number: ");
                 String empInput = sc.nextLine();
                 processEmployee(empInput, empFile, attFile);
-            } else if (choice == 2) {
+            } 
+            else if (choice == 2) 
+            {
                 processAllEmployees(empFile, attFile);
             }
         }
-        static void showEmployeeInfo(String empNo, String empFile) {
-        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
-
+    }
+        static void showEmployeeInfo(String empNo, String empFile) 
+    {
+        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) 
+        {
             String header = br.readLine();
-            if (header == null) {
+            if (header == null) 
+            {
                 System.out.println("Employee file is empty.");
                 return;
             }
-
+            
             String line;
             boolean found = false;
 
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) 
+            {
                 String[] data = parseCSVLine(line);
-                if (data.length > 0 && safeGet(data, 0).equals(empNo)) {
+                if (data.length > 0 && safeGet(data, 0).equals(empNo)) 
+                {
                     found = true;
                     System.out.println("\nEmployee Number: " + safeGet(data, 0));
                     System.out.println("Employee Name: " + safeGet(data, 1) + ", " + safeGet(data, 2));
@@ -111,17 +118,46 @@ public class MotorPhPayrollSystem {
                 }
             }
 
-            if (!found) {
+            if (!found) 
+            {
                 System.out.println("Employee number does not exist.");
             }
 
-        } catch (Exception e) {
+        } 
+            
+            catch (Exception e) 
+            {
+                System.out.println("Error reading employee file.");
+            }
+        }
+        static void processAllEmployees(String empFile, String attFile) 
+    {
+        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) 
+        {
+            String header = br.readLine();
+            if (header == null) 
+                {
+                System.out.println("Employee file is empty.");
+                return;
+                }
+
+        String line;
+        while ((line = br.readLine()) != null) 
+            {
+                String[] data = parseCSVLine(line);
+                String empNo = safeGet(data, 0);
+
+            if (!empNo.isEmpty()) 
+                {
+                    processEmployee(empNo, empFile, attFile);
+                }
+            }
+        } 
+        catch (Exception e) 
+        {
             System.out.println("Error reading employee file.");
         }
-    }
-
-        
-    }
-
-        
 }
+    }
+
+    
