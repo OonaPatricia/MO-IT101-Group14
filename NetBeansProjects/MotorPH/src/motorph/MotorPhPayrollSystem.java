@@ -61,4 +61,36 @@ public class MotorPhPayrollSystem {
 
             showEmployeeInfo(empInput, empFile);
 
+        }
+
+        else if (username.equals("payroll_staff")) {
+
+            System.out.println("\n1. Process Payroll");
+            System.out.println("2. Exit");
+            int option = sc.nextInt();
+            sc.nextLine();
+
+            if (option == 2) return;
+
+            System.out.println("\n1. One Employee");
+            System.out.println("2. All Employees");
+            System.out.println("3. Exit");
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            if (choice == 3) return;
+
+            if (choice == 1) {
+                System.out.print("Enter Employee Number: ");
+                String empInput = sc.nextLine();
+                processEmployee(empInput, empFile, attFile);
+            } else if (choice == 2) {
+                processAllEmployees(empFile, attFile);
+            }
+        }
+
         
+    }
+
+        
+}
