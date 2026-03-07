@@ -45,8 +45,9 @@ public class MotorPhPayrollSystem {
         
         //Login Successful
         System.out.println("Login successful!");
-        
-        s if (username.equals("employee")) {
+
+        //if username, equal employee
+        if (username.equals("employee")) {
 
             System.out.println("\n1. Enter Employee Number");
             System.out.println("2. Exit");
@@ -60,50 +61,4 @@ public class MotorPhPayrollSystem {
 
             showEmployeeInfo(empInput, empFile);
 
-        Scanner sc = new Scanner(System.in);
-        String empNumInput = sc.nextLine();
-
-        boolean found = false;
-
-        try {
-            InputStream is = EmployeeNumber.class
-                .getClassLoader()
-                .getResourceAsStream("MotorPh_EmployeeData.csv");
-
-            if (is == null) { 
-                System.out.println("File not found!");
-                return;
-            }
-            BufferedReader br = new BuffereReader(new InputStreamReader(is));
-
-            br. readLine(); // skip header
-
-            String line;
-
-            while ((line = br.readline()) !=null) {
-
-                System.out.println("\nEmployee Found:");
-                System.out.println("Employee #: " + data[0]);
-                System.out.println("Last Name: " + data[1]);
-                System.out.println("First Name: " + data[2]);
-                System.out.println("Birthday: " + data[3]);
-                System.out.println("Position: " + data[11]);
-                System.out.println("Basic Salary: " + data[13]);
-                System.out.println("Hourly Rate: " + data[18]);
-
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) { 
-            System.out.println("Employee does not exist.");
-        }
-
-    } catch (IOException e) { 
-        System.out.println("Error reading file: " + e.getMessege());
-    }
-
-    sc.close(); 
-  }
-}
+        
