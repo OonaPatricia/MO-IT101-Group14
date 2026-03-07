@@ -355,29 +355,48 @@ public class MotorPhPayrollSystem {
         }
     }
 
+    // Method that calculates the number of working hours for a day
     static double computeHours(LocalTime actualIn, LocalTime actualOut) {
-
+        
+        // Official work start time
         LocalTime start = LocalTime.of(8, 0);
-        LocalTime end = LocalTime.of(17, 0);
-        LocalTime graceEnd = LocalTime.of(8, 10);
 
+        // Official work end time
+        LocalTime end = LocalTime.of(17, 0);
+
+        // Grace period end time (8:10 AM)
+        LocalTime graceEnd = LocalTime.of(8, 10);
+        
+        // Variable to store adjusted login time
         LocalTime in;
+
+        // Variable to store adjusted login time
         if (actualIn.isBefore(start) || actualIn.equals(start)) {
+            in = start;    
+        }
+            
+        // If employee logs in within the grace period (before 8:10 AM), count as 8:00 AM
+        else if (!actualIn.isAfter(graceEnd)) {
             in = start;
-        } else if (!actualIn.isAfter(graceEnd)) {
-            in = start;
-        } else {
+        } 
+
+        // Otherwise use the actual login time
+        else {
             in = actualIn;
         }
 
+        // If logout time exceeds 5:00 PM, limit it to 5:00 PM
         LocalTime out = actualOut.isAfter(end) ? end : actualOut;
 
+        // If logout happens before login, return 0 hours
         if (out.isBefore(in) || out.equals(in)) {
             return 0;
         }
 
+        // Compute the total minutes worked
         long minutes = java.time.Duration.between(in, out).toMinutes();
 
+         // Deduct 1 hour (60 minutes) for lunch break
         if (minutes > 60) {
             minutes -= 60;
         } else {
