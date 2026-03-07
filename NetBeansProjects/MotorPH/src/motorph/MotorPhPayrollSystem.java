@@ -46,17 +46,19 @@ public class MotorPhPayrollSystem {
         //Login Successful
         System.out.println("Login successful!");
         
-        sc.close();
+        s if (username.equals("employee")) {
 
-import java.io.BufferedReader; 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.Scanner;
+            System.out.println("\n1. Enter Employee Number");
+            System.out.println("2. Exit");
+            int option = sc.nextInt();
+            sc.nextLine();
 
-public class EmployeeNumber {
+            if (option == 2) return;
 
-    public static void main(String[] args) {
+            System.out.print("Enter Employee Number: ");
+            String empInput = sc.nextLine();
+
+            showEmployeeInfo(empInput, empFile);
 
         Scanner sc = new Scanner(System.in);
         String empNumInput = sc.nextLine();
