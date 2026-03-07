@@ -411,7 +411,7 @@ public class MotorPhPayrollSystem {
 
         return hours;
     }
-
+    // Converts a date string from .csv file into a Local Date
     static LocalDate parseDate(String s) {
         try {
             if (s == null) {
@@ -433,7 +433,7 @@ public class MotorPhPayrollSystem {
             return null;
         }
     }
-
+    // Converts a time string from .csv file into a local time
     static LocalTime parseTime(String s, DateTimeFormatter fmt) {
         try {
             if (s == null) {
@@ -451,7 +451,7 @@ public class MotorPhPayrollSystem {
             return null;
         }
     }
-
+    // Converts a month number into its name
     static String monthName(int m) {
         switch (m) {
             case 6: return "June";
@@ -464,7 +464,7 @@ public class MotorPhPayrollSystem {
             default: return "Month " + m;
         }
     }
-
+    // Splits .csv row into columns correctly 
     static String[] parseCSVLine(String line) {
         ArrayList<String> out = new ArrayList<>();
         StringBuilder cur = new StringBuilder();
@@ -486,7 +486,7 @@ public class MotorPhPayrollSystem {
         out.add(stripQuotes(cur.toString().trim()));
         return out.toArray(new String[0]);
     }
-
+    // Removes quotation marks from the text
     static String stripQuotes(String s) {
         if (s == null) {
             return "";
@@ -525,7 +525,7 @@ public class MotorPhPayrollSystem {
 
         return -1;
     }
-
+    // Converts salary text from .csv file into a number
     static double parseMoney(String s) {
         try {
             if (s == null) {
@@ -543,7 +543,7 @@ public class MotorPhPayrollSystem {
             return 0;
         }
     }
-
+    // Calculates SSS contribution based on gross salary
     static double computeSSS(double gross) {
         if (gross < 3250) {
             return 135;
@@ -553,7 +553,7 @@ public class MotorPhPayrollSystem {
             return 135 + ((int) ((gross - 3250) / 500) + 1) * 22.5;
         }
     }
-
+    // Calculates Philhealth deduction
     static double computePhilHealth(double gross) {
         if (gross <= 10000) {
             return 150;
@@ -563,7 +563,7 @@ public class MotorPhPayrollSystem {
             return 900;
         }
     }
-
+    // Calculates Pag-IBIG contribution
     static double computePagIBIG(double gross) {
         if (gross <= 1500) {
             return gross * 0.01;
@@ -571,7 +571,7 @@ public class MotorPhPayrollSystem {
             return gross * 0.02;
         }
     }
-
+    // Calculation of income tax deduction
     static double computeWithholdingTax(double gross) {
         if (gross <= 20832) {
             return 0;
