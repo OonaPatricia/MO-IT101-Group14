@@ -4,10 +4,10 @@ Computer Programming 1 | Milestone 2
 **Team Details**
 
 Andrielle Anas
-- Net wage calculation, hours worked calculation, issue identification and documentation, and compilation of codes in GitHub.
+- Gross wage calculation, Net wage calculation, hours worked calculation, deductions, issue identification and documentation, and compilation of codes in GitHub.
 
 Jomari Curtney Diamse 
-- Gross wage calculation and salary computations, including deductions.
+- Gross wage calculation and salary computations.
 
 Oona Patricia Socorro Santos 
 - Employee and payroll staff logins, employee details presentation, unit testing, creation of the GitHub repository, and updating of the project plan.
