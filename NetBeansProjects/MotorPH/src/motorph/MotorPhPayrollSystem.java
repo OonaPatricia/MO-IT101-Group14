@@ -563,14 +563,25 @@ public class MotorPhPayrollSystem {
             return 900;
         }
     }
-    // Calculates Pag-IBIG contribution
     static double computePagIBIG(double gross) {
-        if (gross <= 1500) {
-            return gross * 0.01;
-        } else {
-            return gross * 0.02;
-        }
+    double contribution;
+    // If salary is 1500 or below → 1% contribution
+    if (gross <= 1500) {
+        contribution = gross * 0.01;
+    } 
+    
+    // If salary is above 1500 → 2% contribution
+    else {
+        contribution = gross * 0.02;
     }
+        
+    // Apply Pag-IBIG maximum contribution cap of ₱100
+    if (contribution > 100) {
+        contribution = 100;
+    }
+
+    return contribution;
+}
     // Calculation of income tax deduction
     static double computeWithholdingTax(double gross) {
         if (gross <= 20832) {
