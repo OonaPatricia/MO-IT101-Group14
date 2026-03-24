@@ -19,29 +19,38 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Collections;
+import java.util.List;
 
 
 public class MotorPhPayrollSystem {
+    
+    static HashMap<String, String[]> employeeMap = new HashMap<>();
+    static HashMap<String, ArrayList<String[]>> attendanceMap = new HashMap<>();
+
+    static int empNoIdx = -1;
+    static int firstNameIdx = -1;
+    static int lastNameIdx = -1;
+    static int birthdayIdx = -1;
+    static int hourlyRateIdx = -1;
     
     public static void main(String[] args) {
 
         // Create a scanner to read input
         Scanner sc = new Scanner(System.in);
 
-        // Ask the user to enter username
         System.out.print("Enter username: ");
-        // Read the username input
         String username = sc.nextLine();
 
-        // Ask the user to enter password
         System.out.print("Enter password: ");
-        // Read the password input
         String password = sc.nextLine();
 
-        // File path of MotorPH's Employee Details CSV File
         String empFile = "resources/MotorPH_Employee Data - Employee Details.csv";
-        // File path of the MotorPH's Attendance Record CSV File
         String attFile = "resources/MotorPH_Employee Data - Attendance Record.csv";
+        
+        loadEmployees(empFile);
+        loadAttendance(attFile);
         
         //Credentials Validation
         if (!(username.equals("employee") || username.equals("payroll_staff")) 
@@ -56,305 +65,245 @@ public class MotorPhPayrollSystem {
         // If the username entered was "employee"
         if (username.equals("employee")) {
 
-            // Display the options available
             System.out.println("\nPlease choose an option below");
             System.out.println("1. Enter Employee Number");
             System.out.println("2. Exit");
 
-            // Read the option chosen
             int option = sc.nextInt();
 
-            // Clear the scanner
             sc.nextLine();
 
-            // If the user selected option 2, terminate the program
             if (option == 2) return;
 
-            // Ask the employee to enter their employee number
             System.out.print("Enter Employee Number: ");
-             // Read the employee number
             String empInput = sc.nextLine();
-
-            // Call the method that displays employee information
-            showEmployeeInfo(empInput, empFile);
+            showEmployeeInfo(empInput.trim());
         }
 
         // If the username entered was "payroll_staff"
         else if (username.equals("payroll_staff")) {
 
-            // Display payroll staff options
             System.out.println("\nPlease choose an option below");
             System.out.println("1. Process Payroll");
             System.out.println("2. Exit");
 
-            // Read the selected option
             int option = sc.nextInt();
-
-            // Read the selected option
             sc.nextLine();
-
-            // If option 2 is selected, terminate the program
+            
             if (option == 2) return;
 
-            // Display payroll processing options
             System.out.println("\n Please choose an option below");
             System.out.println("1. One Employee");
             System.out.println("2. All Employees");
             System.out.println("3. Exit");
 
-            // Read the selected payroll processing option
             int choice = sc.nextInt();
-
-            // Read the selected payroll processing option
             sc.nextLine();
 
-            // If option 3 is selected, terminate the program
             if (choice == 3) return;
 
-            // If payroll staff chooses to process payroll for one employee
             if (choice == 1) {
-                // Ask for employee number
                 System.out.print("Enter Employee Number: ");
 
-                // Ask for employee number
-                String empInput = sc.nextLine();
-
-                 // Process payroll for that employee
-                processEmployee(empInput, empFile, attFile);
+                String empInput = sc.nextLine().trim();
+                processEmployee(empInput);
             } 
 
-            // If payroll staff chooses to process payroll for all employees
             else if (choice == 2) {
 
                  // Call method to process payroll for every employee in the file
-                processAllEmployees(empFile, attFile);
+                processAllEmployees();
             }
         }
     }
-        // Method that displays employee details for employee users
-        static void showEmployeeInfo(String empNo, String empFile) {
+    
+    static void loadEmployees(String empFile) {
+    try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
 
-         // Try to open and read the employee CSV file
-        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
-
-            // Read the first line of the CSV file (header row)
-            String header = br.readLine();
-            
-            // If the file is empty, display error message
-            if (header == null) {
-                System.out.println("Employee file is empty.");
-                return;
-            }
-
-            // Variable to store each line read from the CSV file
-            String line;
-            
-            // Boolean flag to check if employee was found
-            boolean found = false;
-
-            // Loop through each line of the CSV file
-            while ((line = br.readLine()) != null) {
-
-                // Split the CSV row into columns
-                String[] data = parseCSVLine(line);
-
-                // Check if the employee number matches the user input
-                if (data.length > 0 && safeGet(data, 0).equals(empNo)) {
-
-                    // Employee found
-                    found = true;
-
-                    // Display employee information
-                    System.out.println("\nEmployee Number: " + safeGet(data, 0));
-                    System.out.println("Employee Name: " + safeGet(data, 1) + ", " + safeGet(data, 2));
-                    System.out.println("Birthday: " + safeGet(data, 3));
-                    
-                    break;
-                }
-            }
-
-            // If employee number was not found in the CSV file
-            if (!found) {
-                System.out.println("Employee number does not exist.");
-            }
-
-        }  
-            catch (Exception e) {
-                // Display error if the file cannot be read
-                System.out.println("Error reading employee file.");
-            }
+        String header = br.readLine();
+        if (header == null) {
+            System.out.println("Employee file is empty.");
+            return;
         }
-        
-    static void processAllEmployees(String empFile, String attFile) {
-        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
-            String header = br.readLine();
-            if (header == null) {
-                System.out.println("Employee file is empty.");
-                return;
-                }
+
+        String[] headers = parseCSVLine(header);
+
+        empNoIdx = indexOf(headers, "Employee #");
+        firstNameIdx = indexOf(headers, "First Name");
+        lastNameIdx = indexOf(headers, "Last Name");
+        birthdayIdx = indexOf(headers, "Birthday");
+        hourlyRateIdx = indexOf(headers, "Hourly Rate");
+
+        if (empNoIdx == -1) empNoIdx = 0;
+        if (firstNameIdx == -1) firstNameIdx = 1;
+        if (lastNameIdx == -1) lastNameIdx = 2;
+        if (birthdayIdx == -1) birthdayIdx = 3;
+        if (hourlyRateIdx == -1) hourlyRateIdx = 18;
 
         String line;
         while ((line = br.readLine()) != null) {
-                String[] data = parseCSVLine(line);
-                String empNo = safeGet(data, 0);
+            String[] data = parseCSVLine(line);
+            String empNo = safeGet(data, empNoIdx);
 
             if (!empNo.isEmpty()) {
-                    processEmployee(empNo, empFile, attFile);
-                }
+                employeeMap.put(empNo, data);
             }
-        } 
-        catch (Exception e) 
-        {
-            System.out.println("Error reading employee file.");
         }
+
+    } catch (Exception e) {
+        System.out.println("Error reading employee file.");
+    }
 }
+    
+    static void loadAttendance(String attFile) {
+    try (BufferedReader br = new BufferedReader(new FileReader(attFile))) {
 
-        static void processEmployee(String inputEmpNo, String empFile, String attFile) {
-
-        String empNo = "";
-        String firstName = "";
-        String lastName = "";
-        String birthday = "";
-        double rate = 0;
-        boolean found = false;
-
-        int hourlyRateIndex = 18;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(empFile))) {
-
-            String header = br.readLine();
-            if (header != null) {
-                String[] head = parseCSVLine(header);
-                int idx = indexOf(head, "Hourly Rate");
-                if (idx != -1) {
-                    hourlyRateIndex = idx;
-                }
-            }
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = parseCSVLine(line);
-
-                if (data.length > 0 && safeGet(data, 0).equals(inputEmpNo)) {
-                    empNo = safeGet(data, 0);
-                    lastName = safeGet(data, 1);
-                    firstName = safeGet(data, 2);
-                    birthday = safeGet(data, 3);
-
-                    String rateStr = safeGet(data, hourlyRateIndex);
-                    rate = parseMoney(rateStr);
-
-                    found = true;
-                    break;
-                }
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error reading employee file.");
+        String header = br.readLine();
+        if (header == null) {
+            System.out.println("Attendance file is empty.");
             return;
         }
 
-        if (!found) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] data = parseCSVLine(line);
+            String empNo = safeGet(data, 0);
+
+            if (empNo.isEmpty()) continue;
+
+            attendanceMap
+                .computeIfAbsent(empNo, k -> new ArrayList<>())
+                .add(data);
+        }
+
+    } catch (Exception e) {
+        System.out.println("Error reading attendance file.");
+    }
+}
+    
+    
+    
+        // Method that displays employee details for employee users
+    static void showEmployeeInfo(String empNo) {
+        String[] data = employeeMap.get(empNo.trim());
+
+        if (data == null) {
             System.out.println("Employee number does not exist.");
             return;
-        }
+    }
 
-        System.out.println("\n===================================");
-        System.out.println("Employee #: " + empNo);
-        System.out.println("Employee Name: " + lastName + ", " + firstName);
-        System.out.println("Birthday: " + birthday);
+        System.out.println("\nEmployee Number: " + safeGet(data, empNoIdx));
+        System.out.println("Employee Name: " + safeGet(data, firstNameIdx) + ", " + safeGet(data, lastNameIdx));
+        System.out.println("Birthday: " + safeGet(data, birthdayIdx));
+}
+        
+   static void processAllEmployees() {
+        List<String> sortedKeys = new ArrayList<>(employeeMap.keySet());
+        Collections.sort(sortedKeys);
+
+        for (String empNo : sortedKeys) {
+            processEmployee(empNo);
+    }
+}
+
+    static void processEmployee(String inputEmpNo) {
+
+        String[] empData = employeeMap.get(inputEmpNo.trim());
+
+        if (empData == null) {
+            System.out.println("Employee number does not exist.");
+            return;
+    }
+
+        String empNo = safeGet(empData, empNoIdx);
+        String firstName = safeGet(empData, firstNameIdx);
+        String lastName = safeGet(empData, lastNameIdx);
+        String birthday = safeGet(empData, birthdayIdx);
+        double rate = parseMoney(safeGet(empData, hourlyRateIdx));
 
         double[] hours1 = new double[13];
         double[] hours2 = new double[13];
 
-        DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("H:mm");
+        fillCutoffHours(empNo, hours1, hours2);
+        printPayrollReport(empNo, firstName, lastName, birthday, rate, hours1, hours2);
+}
 
-        try (BufferedReader br = new BufferedReader(new FileReader(attFile))) {
+    static void fillCutoffHours(String empNo, double[] hours1, double[] hours2) {
+        ArrayList<String[]> records = attendanceMap.get(empNo);
 
-            br.readLine();
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                String[] data = parseCSVLine(line);
-
-                if (data.length == 0) {
-                    continue;
-                }
-
-                if (!safeGet(data, 0).equals(empNo)) {
-                    continue;
-                }
-
-                LocalDate date = parseDate(safeGet(data, 3));
-                if (date == null) {
-                    continue;
-                }
-
-                int month = date.getMonthValue();
-                if (month < 6 || month > 12) {
-                    continue;
-                }
-
-                LocalTime in = parseTime(safeGet(data, 4), timeFmt);
-                LocalTime out = parseTime(safeGet(data, 5), timeFmt);
-
-                if (in == null || out == null) {
-                    continue;
-                }
-
-                double hrs = computeHours(in, out);
-
-                if (date.getDayOfMonth() <= 15) {
-                    hours1[month] += hrs;
-                } else {
-                    hours2[month] += hrs;
-                }
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error reading attendance file.");
+        if (records == null) {
             return;
         }
 
-        for (int month = 6; month <= 12; month++) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("H:mm");
 
-            YearMonth ym = YearMonth.of(2026, month);
-            int lastDay = ym.lengthOfMonth();
+        for (String[] data : records) {
+            LocalDate date = parseDate(safeGet(data, 3));
+            LocalTime timeIn = parseTime(safeGet(data, 4), fmt);
+            LocalTime timeOut = parseTime(safeGet(data, 5), fmt);
 
-            double gross1 = hours1[month] * rate;
-            double gross2 = hours2[month] * rate;
+        if (date == null || timeIn == null || timeOut == null) {
+            continue;
+        }
 
-            double combinedGross = gross1 + gross2;
+        int month = date.getMonthValue();
+        if (month < 6 || month > 12) {
+            continue;
+        }
 
-            double sss = computeSSS(combinedGross);
-            double phil = computePhilHealth(combinedGross);
-            double pagibig = computePagIBIG(combinedGross);
-            double tax = computeWithholdingTax(combinedGross);
+        double hoursWorked = computeHours(timeIn, timeOut);
 
-            double totalDed = sss + phil + pagibig + tax;
-
-            double net1 = gross1;
-            double net2 = gross2 - totalDed;
-
-            System.out.println("\n---------- " + monthName(month) + " ----------");
-
-            System.out.println("Cutoff Date: " + monthName(month) + " 1-15");
-            System.out.println("Total Hours Worked: " + hours1[month]);
-            System.out.println("Gross Pay: " + gross1);
-            System.out.println("Net Pay: " + net1);
-
-            System.out.println("\nCutoff Date: " + monthName(month) + " 16-" + lastDay);
-            System.out.println("Total Hours Worked: " + hours2[month]);
-            System.out.println("Gross Pay: " + gross2);
-            System.out.println("SSS: " + sss);
-            System.out.println("PhilHealth: " + phil);
-            System.out.println("Pag-IBIG: " + pagibig);
-            System.out.println("Tax: " + tax);
-            System.out.println("Total Deductions: " + totalDed);
-            System.out.println("Net Pay: " + net2);
+        if (date.getDayOfMonth() <= 15) {
+            hours1[month] += hoursWorked;
+        } else {
+            hours2[month] += hoursWorked;
         }
     }
+}
+    
+    static void printPayrollReport(String empNo, String firstName, String lastName,
+                               String birthday, double rate,
+                               double[] hours1, double[] hours2) {
 
+    System.out.println("\n=====================================");
+    System.out.println("Employee Number: " + empNo);
+    System.out.println("Employee Name: " + firstName + ", " + lastName);
+    System.out.println("Birthday: " + birthday);
+
+    for (int month = 6; month <= 12; month++) {
+
+        double gross1 = hours1[month] * rate;
+        double gross2 = hours2[month] * rate;
+        double totalGross = gross1 + gross2;
+
+        double sss = computeSSS(totalGross);
+        double philHealth = computePhilHealth(totalGross);
+        double pagIBIG = computePagIBIG(totalGross);
+        double withholdingTax = computeWithholdingTax(totalGross);
+
+        double deductions = sss + philHealth + pagIBIG + withholdingTax;
+        double netSalary2 = gross2 - deductions;
+
+        int lastDay = YearMonth.of(2024, month).lengthOfMonth();
+
+        System.out.println("\n----- " + monthName(month) + " -----");
+
+        System.out.println("\nCutoff Date: " + monthName(month) + " 1 to 15");
+        System.out.println("Total Hours Worked: " + hours1[month]);
+        System.out.println("Gross Salary: " + gross1);
+        System.out.println("Net Salary: " + gross1);
+
+        System.out.println("\nCutoff Date: " + monthName(month) + " 16 to " + lastDay);
+        System.out.println("Total Hours Worked: " + hours2[month]);
+        System.out.println("Gross Salary: " + gross2);
+        System.out.println("SSS: " + sss);
+        System.out.println("PhilHealth: " + philHealth);
+        System.out.println("Pag-IBIG: " + pagIBIG);
+        System.out.println("Withholding Tax: " + withholdingTax);
+        System.out.println("Total Deductions: " + deductions);
+        System.out.println("Net Salary: " + netSalary2);
+    }
+}
     // Method that calculates the number of working hours for a day
     static double computeHours(LocalTime actualIn, LocalTime actualOut) {
         
