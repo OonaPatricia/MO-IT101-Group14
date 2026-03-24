@@ -8,7 +8,6 @@ package motorph;
  *
  * @author patricesaints
  * @andrielleanas
- * @diamsecurtney
  * ac
  */
 import java.io.BufferedReader;
