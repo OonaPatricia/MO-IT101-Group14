@@ -7,7 +7,7 @@ package motorph;
 /**
  *
  * @author patricesaints
- * @andrielleanas
+ * @author andrielleanas
  * 
  */
 import java.io.BufferedReader;
@@ -33,6 +33,7 @@ public class MotorPhPayrollSystem {
     static int lastNameIdx = -1;
     static int birthdayIdx = -1;
     static int hourlyRateIdx = -1;
+    static int basicSalaryIdx = -1;
     
     public static void main(String[] args) {
 
@@ -68,9 +69,18 @@ public class MotorPhPayrollSystem {
             System.out.println("1. Enter Employee Number");
             System.out.println("2. Exit");
 
-            int option = sc.nextInt();
+            int option;
 
-            sc.nextLine();
+            while (true) {
+                if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine();
+            }
+            }
 
             if (option == 2) return;
 
@@ -86,8 +96,18 @@ public class MotorPhPayrollSystem {
             System.out.println("1. Process Payroll");
             System.out.println("2. Exit");
 
-            int option = sc.nextInt();
-            sc.nextLine();
+            int option;
+
+            while (true) {
+                if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine();
+            }
+        }
             
             if (option == 2) return;
 
@@ -96,8 +116,18 @@ public class MotorPhPayrollSystem {
             System.out.println("2. All Employees");
             System.out.println("3. Exit");
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+            int choice;
+
+            while (true) {
+                if (sc.hasNextInt()) {
+                    choice = sc.nextInt();
+                    sc.nextLine();
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please enter a number.");
+                    sc.nextLine();
+                }
+            }
 
             if (choice == 3) return;
 
@@ -132,12 +162,14 @@ public class MotorPhPayrollSystem {
         lastNameIdx = indexOf(headers, "Last Name");
         birthdayIdx = indexOf(headers, "Birthday");
         hourlyRateIdx = indexOf(headers, "Hourly Rate");
+        basicSalaryIdx = indexOf(headers, "Basic Salary");
 
         if (empNoIdx == -1) empNoIdx = 0;
-        if (firstNameIdx == -1) firstNameIdx = 1;
-        if (lastNameIdx == -1) lastNameIdx = 2;
+        if (firstNameIdx == -1) firstNameIdx = 2;
+        if (lastNameIdx == -1) lastNameIdx = 1;
         if (birthdayIdx == -1) birthdayIdx = 3;
         if (hourlyRateIdx == -1) hourlyRateIdx = 18;
+        if (basicSalaryIdx == -1) basicSalaryIdx = 13;
 
         String line;
         while ((line = br.readLine()) != null) {
@@ -219,12 +251,13 @@ public class MotorPhPayrollSystem {
         String lastName = safeGet(empData, lastNameIdx);
         String birthday = safeGet(empData, birthdayIdx);
         double rate = parseMoney(safeGet(empData, hourlyRateIdx));
+        double basicSalary = parseMoney(safeGet(empData, basicSalaryIdx));
 
         double[] hours1 = new double[13];
         double[] hours2 = new double[13];
 
         fillCutoffHours(empNo, hours1, hours2);
-        printPayrollReport(empNo, firstName, lastName, birthday, rate, hours1, hours2);
+        printPayrollReport(empNo, firstName, lastName, birthday, rate, basicSalary, hours1, hours2);
 }
 
     static void fillCutoffHours(String empNo, double[] hours1, double[] hours2) {
@@ -261,7 +294,7 @@ public class MotorPhPayrollSystem {
 }
     
     static void printPayrollReport(String empNo, String firstName, String lastName,
-                               String birthday, double rate,
+                               String birthday, double rate, double basicSalary,
                                double[] hours1, double[] hours2) {
 
     System.out.println("\n=====================================");
@@ -276,7 +309,7 @@ public class MotorPhPayrollSystem {
         double totalGross = gross1 + gross2;
 
         double sss = computeSSS(totalGross);
-        double philHealth = computePhilHealth(totalGross);
+        double philHealth = computePhilHealth(basicSalary);
         double pagIBIG = computePagIBIG(totalGross);
         double withholdingTax = computeWithholdingTax(totalGross);
 
